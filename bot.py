@@ -34,6 +34,10 @@ PROTECT_CONTENT = os.getenv("PROTECT_CONTENT", "false").lower() == "true"
 if not ADMIN_IDS:
     raise SystemExit("ADMIN_IDS must contain at least one Telegram user id")
 
+# Python 3.14 no longer creates an event loop implicitly, so create one up front.
+# Motor and run_polling() both pick up this same loop.
+asyncio.set_event_loop(asyncio.new_event_loop())
+
 db = AsyncIOMotorClient(MONGO_URI)[DB_NAME]
 admin_only = filters.User(user_id=ADMIN_IDS)
 
